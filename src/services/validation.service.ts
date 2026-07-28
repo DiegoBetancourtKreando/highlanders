@@ -45,7 +45,7 @@ export const validationService = {
     if (existingPlayer) {
       return {
         available: false,
-        message: `El número ${jerseyNumber} ya está asignado a ${existingPlayer.fullName} en ${existingPlayer.category.name} - ${existingPlayer.venue.name}. Por favor, elige otro número.`,
+        message: `El número ${jerseyNumber} ya está asignado. Por favor, elige otro número.`,
         playerName: existingPlayer.fullName,
       };
     }
@@ -64,7 +64,7 @@ export const validationService = {
     if (existingRequest) {
       return {
         available: false,
-        message: `El número ${jerseyNumber} ya fue solicitado para ${existingRequest.playerFullName} en esta categoría y sede. La solicitud está pendiente de aprobación.`,
+        message: `El número ${jerseyNumber} ya fue solicitado. Por favor, elige otro número.`,
         playerName: existingRequest.playerFullName,
       };
     }

@@ -42,54 +42,53 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen hero-gradient flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Elementos decorativos */}
-      <div className="absolute top-10 left-10 w-72 h-72 bg-[#C8A84E]/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-float" style={{ animationDelay: "-3s" }} />
+    <div className="min-h-screen bg-[#f8f7f4] flex items-center justify-center px-4">
+      {/* Modal overlay */}
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
+      
+      {/* Modal card */}
+      <div className="relative w-full max-w-md animate-fade-in">
+        <div className="glass-card p-8">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <Image
+              src="/logoHIGHH.png"
+              alt="HighLanders"
+              width={64}
+              height={64}
+              className="mx-auto mb-3 drop-shadow-lg"
+            />
+            <h1 className="text-xl font-bold text-[#1a3c2a]">HighLanders</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Panel de Administración</p>
+          </div>
 
-      <div className="w-full max-w-md relative animate-fade-in">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Image
-            src="/logoHIGHH.png"
-            alt="HighLanders"
-            width={80}
-            height={80}
-            className="mx-auto mb-4 drop-shadow-2xl"
-          />
-          <h1 className="text-2xl font-bold text-white">HighLanders</h1>
-          <p className="text-sm text-white/50 mt-1">Panel de Administración</p>
-        </div>
-
-        {/* Glass Card */}
-        <div className="glass-card !bg-white/10 !backdrop-blur-2xl p-8 border-white/10">
           {error && (
-            <Alert type="error" className="mb-6" onClose={() => setError(null)}>
+            <Alert type="error" className="mb-5" onClose={() => setError(null)}>
               {error}
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">Correo electrónico</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Correo electrónico</label>
               <input
                 type="email"
                 placeholder="admin@highlanders.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="glass-input w-full px-4 py-2.5 text-sm text-white placeholder:text-white/30 bg-white/10 border-white/10 focus:border-[#C8A84E] focus:bg-white/15"
+                className="glass-input w-full px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white border-gray-200 focus:border-[#C8A84E]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">Contraseña</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
               <input
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="glass-input w-full px-4 py-2.5 text-sm text-white placeholder:text-white/30 bg-white/10 border-white/10 focus:border-[#C8A84E] focus:bg-white/15"
+                className="glass-input w-full px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white border-gray-200 focus:border-[#C8A84E]"
               />
             </div>
             <Button type="submit" loading={loading} variant="gold" className="w-full">

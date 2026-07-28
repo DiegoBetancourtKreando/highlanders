@@ -66,7 +66,7 @@ export const additionalNotesSchema = z
 export const sizeSchema = z
   .string()
   .min(1, "La talla es obligatoria")
-  .max(10, "Talla inválida");
+  .max(50, "Talla inválida");
 
 /**
  * Esquema completo del formulario de uniforme

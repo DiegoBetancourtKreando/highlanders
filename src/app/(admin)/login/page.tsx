@@ -30,7 +30,8 @@ export default function LoginPage() {
 
       if (data.success) {
         document.cookie = `auth_token=${data.data.token}; path=/; max-age=28800; SameSite=Strict`;
-        router.push("/dashboard");
+        // Usar window.location para navegación forzada (más confiable que router.push)
+        window.location.href = "/dashboard";
       } else {
         setError(data.error || "Credenciales inválidas");
       }

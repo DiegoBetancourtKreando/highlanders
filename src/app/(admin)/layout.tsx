@@ -41,30 +41,38 @@ export default function AdminLayout({
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Verificar autenticación
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("auth_token="));
+    const checkAuth = () => {
+      const cookies = document.cookie.split("; ");
+      const tokenCookie = cookies.find((row) => row.startsWith("auth_token="));
 
-    if (!token) {
+      if (!tokenCookie) {
+        setIsAuthenticated(false);
+        setChecking(false);
+        return;
+      }
+
+      try {
+        // Extraer el payload del JWT
+        const payloadBase64 = tokenCookie.substring("auth_token=".length).split(".")[1];
+        const payload = JSON.parse(atob(payloadBase64));
+        setUserName(payload.fullName || "Admin");
+        setIsAuthenticated(true);
+      } catch {
+        document.cookie = "auth_token=; path=/; max-age=0; SameSite=Strict";
+        setIsAuthenticated(false);
+      }
+
+      setChecking(false);
+    };
+
+    checkAuth();
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!checking && !isAuthenticated && pathname !== "/login") {
       router.push("/login");
-      return;
     }
-
-    // Decodificar info del usuario del JWT (payload)
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      setUserName(payload.fullName || "Admin");
-      setIsAuthenticated(true);
-    } catch {
-      document.cookie =
-        "auth_token=; path=/; max-age=0; SameSite=Strict";
-      router.push("/login");
-      return;
-    }
-
-    setChecking(false);
-  }, [router]);
+  }, [checking, isAuthenticated, pathname, router]);
 
   const handleLogout = () => {
     document.cookie = "auth_token=; path=/; max-age=0; SameSite=Strict";

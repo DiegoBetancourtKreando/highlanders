@@ -84,22 +84,32 @@ export const authService = {
   },
 
   /**
-   * Obtiene el token del header Authorization
+   * Extrae el token del header Authorization o de la cookie auth_token
    */
-  extractToken(authHeader: string | null): string | null {
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return null;
+  extractTokenFromRequest(request: Request): string | null {
+    // 1. Intentar desde Authorization header
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      return authHeader.substring(7);
     }
-    return authHeader.substring(7);
+
+    // 2. Intentar desde la cookie
+    const cookieHeader = request.headers.get("Cookie") || "";
+    const match = cookieHeader.match(/auth_token=([^;]+)/);
+    if (match) {
+      return decodeURIComponent(match[1]);
+    }
+
+    return null;
   },
 
   /**
-   * Verifica la autenticación desde los headers de la request
+   * Verifica la autenticación desde los headers o cookies de la request
    */
   async authenticateRequest(
     request: Request
   ): Promise<{ authenticated: boolean; user?: AuthPayload }> {
-    const token = this.extractToken(request.headers.get("Authorization"));
+    const token = this.extractTokenFromRequest(request);
     if (!token) {
       return { authenticated: false };
     }

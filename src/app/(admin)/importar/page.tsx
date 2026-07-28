@@ -51,10 +51,19 @@ export default function ImportPage() {
 
       const res = await fetch("/api/import", {
         method: "POST",
+        credentials: "include",
         body: formData,
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        setResult({
+          success: false,
+          message: "Tu sesión expiró. Por favor, inicia sesión nuevamente.",
+        });
+        return;
+      }
 
       if (data.success) {
         setResult({

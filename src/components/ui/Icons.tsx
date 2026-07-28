@@ -52,8 +52,7 @@ export const Icons = {
 
   shirt: () => (
     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3a3 3 0 00-2.12.88L6 7.5l1.5 2L9 7.5l3 2 3-2 1.5 2L18 7.5l-3.88-3.62A3 3 0 0012 3zM6 9l-1.5 3L6 21h12l1.5-9L18 9" />
     </svg>
   ),
 

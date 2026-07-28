@@ -210,9 +210,6 @@ export default async function PlayersPage({ searchParams }: Props) {
         <Pagination
           page={page}
           totalPages={totalPages}
-          onPageChange={(newPage) => {
-            // Client-side navigation handled by form
-          }}
         />
       </Card>
 

@@ -141,11 +141,14 @@ export function Badge({ children, variant = "default", className }: BadgeProps) 
 interface PaginationProps {
   page: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
 }
 
-export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
+export function Pagination({ page, totalPages }: PaginationProps) {
   if (totalPages <= 1) return null;
+
+  // Build URL with page param preserving existing search params
+  const prevPage = page > 1 ? page - 1 : 1;
+  const nextPage = page < totalPages ? page + 1 : totalPages;
 
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200">
@@ -153,20 +156,24 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         Página {page} de {totalPages}
       </div>
       <div className="flex gap-2">
-        <button
-          onClick={() => onPageChange(page - 1)}
-          disabled={page <= 1}
-          className="px-3 py-1 text-sm border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        <a
+          href={`?page=${prevPage}`}
+          className={`px-3 py-1 text-sm border rounded-md hover:bg-gray-50 ${
+            page <= 1 ? "pointer-events-none opacity-50" : ""
+          }`}
+          aria-disabled={page <= 1}
         >
           Anterior
-        </button>
-        <button
-          onClick={() => onPageChange(page + 1)}
-          disabled={page >= totalPages}
-          className="px-3 py-1 text-sm border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        </a>
+        <a
+          href={`?page=${nextPage}`}
+          className={`px-3 py-1 text-sm border rounded-md hover:bg-gray-50 ${
+            page >= totalPages ? "pointer-events-none opacity-50" : ""
+          }`}
+          aria-disabled={page >= totalPages}
         >
           Siguiente
-        </button>
+        </a>
       </div>
     </div>
   );

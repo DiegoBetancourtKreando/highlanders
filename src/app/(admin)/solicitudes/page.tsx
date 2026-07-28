@@ -216,7 +216,6 @@ export default async function RequestsPage({ searchParams }: Props) {
         <Pagination
           page={page}
           totalPages={totalPages}
-          onPageChange={() => {}}
         />
       </Card>
 

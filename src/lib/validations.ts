@@ -81,11 +81,9 @@ export const uniformFormSchema = z.object({
   uniformTypeIds: z
     .array(z.string())
     .min(1, "Selecciona al menos un tipo de prenda"),
-  uniformStyleId: z.string().optional(),
   size: sizeSchema,
   celebrationDesc: celebrationDescSchema,
   additionalNotes: additionalNotesSchema,
-  agreeToTerms: z.literal(true, { message: "Debes aceptar los términos" }),
 });
 
 export type UniformFormData = z.infer<typeof uniformFormSchema>;

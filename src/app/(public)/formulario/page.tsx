@@ -103,7 +103,6 @@ export default function UniformFormPage() {
       categoryId: "",
       venueId: "",
       uniformTypeIds: [],
-      uniformStyleId: "",
       size: "",
       celebrationDesc: "",
       additionalNotes: "",
@@ -345,7 +344,6 @@ export default function UniformFormPage() {
             </h2>
             <CheckboxGroup label="Tipo de Uniforme o Prenda" options={catalogs.uniformTypes} selectedValues={watch("uniformTypeIds") || []} onChange={handleUniformTypeChange} error={errors.uniformTypeIds?.message} required columns={2} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <Select label="Estilo de uniforme" options={catalogs.uniformStyles} placeholder="Seleccionar estilo..." {...register("uniformStyleId")} />
               <Select label="Talla" options={catalogs.sizes} placeholder="Seleccionar talla..." {...register("size")} error={errors.size?.message} required />
             </div>
           </section>
@@ -357,15 +355,9 @@ export default function UniformFormPage() {
             <Input label="Nota o instrucción adicional (opcional)" placeholder="Cualquier información adicional que quieras agregar..." {...register("additionalNotes")} />
           </section>
 
-          {/* Sección 5: Términos */}
+          {/* Sección 5: Envío */}
           <section className="glass-card p-6 sm:p-8 space-y-5">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input type="checkbox" {...register("agreeToTerms")} className="mt-1 h-4 w-4 rounded border-gray-300 text-[#1a3c2a] focus:ring-[#C8A84E]" />
-              <span className="text-sm text-gray-600">Confirmo que los datos ingresados son correctos y acepto las políticas de solicitud de uniforme de HighLanders.</span>
-            </label>
-            {errors.agreeToTerms && <p className="text-sm text-red-500">{errors.agreeToTerms.message}</p>}
-
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
+            <div className="flex items-center justify-between pt-2">
               <Button type="button" variant="ghost" onClick={() => router.push("/")}>Cancelar</Button>
               <Button type="submit" loading={isSubmitting} variant="gold" disabled={numberStatus.available !== true && numberStatus.available !== null}>
                 {isSubmitting ? "Enviando..." : "Enviar Solicitud"}

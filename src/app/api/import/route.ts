@@ -1,12 +1,7 @@
 import { NextRequest } from "next/server";
 import { importService } from "@/services/import.service";
 import { authService } from "@/services/auth.service";
-import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/utils";
-import { writeFile } from "fs/promises";
-import { join } from "path";
-import { tmpdir } from "os";
-import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,33 +23,16 @@ export async function POST(request: NextRequest) {
       return apiError("El archivo debe ser .xlsx o .xls", 400);
     }
 
-    // Guardar archivo temporal
+    // Leer archivo en buffer y procesar directamente en memoria
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const tempFilePath = join(tmpdir(), `import-${uuidv4()}.xlsx`);
-    await writeFile(tempFilePath, buffer);
 
-    // Ejecutar importación
-    const result = await importService.importFromExcel(tempFilePath);
-
-    // Registrar log de importación
-    await prisma.importLog.create({
-      data: {
-        filename: file.name,
-        totalRows: result.totalRows,
-        successRows: result.successRows,
-        errorRows: result.errorRows,
-        errors: JSON.stringify(result.errors),
-        status:
-          result.errorRows === 0
-            ? "Completado"
-            : result.successRows > 0
-            ? "Parcial"
-            : "Fallido",
-        adminUserId: auth.user.userId,
-        completedAt: new Date(),
-      },
-    });
+    // Ejecutar importación desde buffer (sin escribir a disco)
+    const result = await importService.importFromBuffer(
+      buffer,
+      file.name,
+      auth.user.userId
+    );
 
     return apiSuccess(result);
   } catch (error) {

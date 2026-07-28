@@ -10,8 +10,7 @@ import {
   Badge,
   Pagination,
 } from "@/components/ui/Table";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { Alert } from "@/components/ui/Alert";
 
 export const dynamic = "force-dynamic";
 
@@ -26,49 +25,50 @@ interface Props {
 }
 
 export default async function PlayersPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const page = parseInt(params.page || "1", 10);
-  const pageSize = 20;
-  const search = params.search || "";
-  const categoryId = params.categoryId || "";
-  const venueId = params.venueId || "";
-  const status = params.status || "";
+  try {
+    const params = await searchParams;
+    const page = parseInt(params.page || "1", 10);
+    const pageSize = 20;
+    const search = params.search || "";
+    const categoryId = params.categoryId || "";
+    const venueId = params.venueId || "";
+    const status = params.status || "";
 
-  // Build where clause
-  const where: Record<string, unknown> = {};
-  if (search) {
-    where.OR = [
-      { fullName: { contains: search, mode: "insensitive" } },
-      { code: isNaN(Number(search)) ? undefined : Number(search) },
-    ].filter(Boolean);
-  }
-  if (categoryId) where.categoryId = categoryId;
-  if (venueId) where.venueId = venueId;
-  if (status) where.status = status;
+    // Build where clause
+    const where: Record<string, unknown> = {};
+    if (search) {
+      where.OR = [
+        { fullName: { contains: search, mode: "insensitive" } },
+        ...(isNaN(Number(search)) ? [] : [{ code: Number(search) }]),
+      ];
+    }
+    if (categoryId) where.categoryId = categoryId;
+    if (venueId) where.venueId = venueId;
+    if (status) where.status = status;
 
-  const [players, total, categories, venues] = await Promise.all([
-    prisma.player.findMany({
-      where,
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      orderBy: { code: "asc" },
-      select: {
-        id: true,
-        code: true,
-        fullName: true,
-        preferredName: true,
-        uniformName: true,
-        jerseyNumber: true,
-        status: true,
-        category: { select: { id: true, name: true } },
-        venue: { select: { id: true, name: true } },
-        createdAt: true,
-      },
-    }),
-    prisma.player.count({ where }),
-    prisma.category.findMany({ orderBy: { order: "asc" } }),
-    prisma.venue.findMany({ orderBy: { order: "asc" } }),
-  ]);
+    const [players, total, categories, venues] = await Promise.all([
+      prisma.player.findMany({
+        where,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        orderBy: { code: "asc" },
+        select: {
+          id: true,
+          code: true,
+          fullName: true,
+          preferredName: true,
+          uniformName: true,
+          jerseyNumber: true,
+          status: true,
+          category: { select: { id: true, name: true } },
+          venue: { select: { id: true, name: true } },
+          createdAt: true,
+        },
+      }),
+      prisma.player.count({ where }),
+      prisma.category.findMany({ orderBy: { order: "asc" } }),
+      prisma.venue.findMany({ orderBy: { order: "asc" } }),
+    ]);
 
   const totalPages = Math.ceil(total / pageSize);
 
@@ -221,4 +221,16 @@ export default async function PlayersPage({ searchParams }: Props) {
       </p>
     </div>
   );
+  } catch (error) {
+    console.error("Error en página de jugadores:", error);
+    return (
+      <div className="p-6">
+        <Alert type="error" title="Error al cargar jugadores">
+          Ocurrió un error al consultar la base de datos. Por favor, verifica
+          que la migración se haya ejecutado correctamente y que la base de
+          datos esté conectada.
+        </Alert>
+      </div>
+    );
+  }
 }

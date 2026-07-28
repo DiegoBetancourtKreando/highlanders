@@ -63,21 +63,7 @@ export default function HomePage() {
                   </Link>
                 </div>
 
-                {/* Stats */}
-                <div className="flex gap-8 mt-12 pt-8 border-t border-white/10">
-                  <div>
-                    <p className="text-2xl font-bold text-white">13</p>
-                    <p className="text-sm text-white/50">Categorías</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-white">4</p>
-                    <p className="text-sm text-white/50">Sedes</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-white">100%</p>
-                    <p className="text-sm text-white/50">Validación Automática</p>
-                  </div>
-                </div>
+
               </div>
 
               {/* Right: Logo */}

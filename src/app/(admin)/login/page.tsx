@@ -62,6 +62,15 @@ export default function LoginPage() {
             <p className="text-sm text-gray-500 mt-0.5">Panel de Administración</p>
           </div>
 
+          <div className="text-center mb-4">
+            <a href="/" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#1a3c2a] transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Volver al inicio
+            </a>
+          </div>
+
           {error && (
             <Alert type="error" className="mb-5" onClose={() => setError(null)}>
               {error}

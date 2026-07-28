@@ -239,25 +239,23 @@ export default function UniformFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">H</span>
-            </div>
-            <span className="font-bold text-lg text-gray-900">
-              HighLanders - Solicitud de Uniforme
-            </span>
+    <div className="min-h-screen bg-[#f8f7f4]">
+      {/* Dynamic Island Header */}
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-3xl">
+        <div className="island-nav flex items-center justify-between px-4 py-2">
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logoHIGHH.png" alt="H" width={28} height={28} className="object-contain" />
+            <span className="font-semibold text-sm text-white">HighLanders</span>
           </div>
+          <span className="text-xs text-white/60">Solicitud de Uniforme</span>
         </div>
       </header>
 
-      {/* Formulario */}
-      <main className="max-w-3xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Mensajes */}
+      <div className="h-20" />
+
+      <main className="max-w-3xl mx-auto px-4 pb-12">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {serverError && (
             <Alert type="error" title="Error" onClose={() => setServerError(null)}>
               {serverError}
@@ -265,8 +263,8 @@ export default function UniformFormPage() {
           )}
 
           {/* Sección 1: Datos del Jugador */}
-          <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <section className="glass-card p-6 sm:p-8 space-y-5">
+            <h2 className="text-lg font-semibold text-[#1a3c2a] flex items-center gap-2">
               <Icons.football />
               Datos del Jugador
             </h2>
@@ -282,7 +280,7 @@ export default function UniformFormPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <Input
                 label="Nombre en la camiseta"
-                placeholder="Ej: El Rayo, Torito, PÉREZ"
+                placeholder="Ej: El Rayo, Torito"
                 {...register("uniformName")}
                 error={errors.uniformName?.message}
                 required
@@ -296,26 +294,26 @@ export default function UniformFormPage() {
               />
             </div>
 
-            {/* Indicador de disponibilidad */}
             {numberStatus.message && (
-              <div
-                className={`p-3 rounded-lg text-sm ${
-                  numberStatus.available
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    : "bg-red-50 text-red-700 border border-red-200"
-                }`}
-              >
+              <div className={`p-4 rounded-2xl text-sm backdrop-blur-sm border ${
+                numberStatus.available
+                  ? "bg-emerald-50/80 border-emerald-200/50 text-emerald-700"
+                  : "bg-red-50/80 border-red-200/50 text-red-700"
+              }`}>
                 {numberStatus.checking ? (
                   <span className="flex items-center gap-2">
-                    <Icons.spinner /> Verificando disponibilidad...
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    Verificando disponibilidad...
                   </span>
                 ) : numberStatus.available ? (
                   <span className="flex items-center gap-2">
-                    <Icons.check /> {numberStatus.message}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    {numberStatus.message}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Icons.x /> {numberStatus.message}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    {numberStatus.message}
                   </span>
                 )}
               </div>
@@ -331,119 +329,45 @@ export default function UniformFormPage() {
           </section>
 
           {/* Sección 2: Categoría y Sede */}
-          <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Categoría y Sede
-            </h2>
-
+          <section className="glass-card p-6 sm:p-8 space-y-5">
+            <h2 className="text-lg font-semibold text-[#1a3c2a]">Categoría y Sede</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <Select
-                label="Categoría"
-                options={catalogs.categories}
-                placeholder="Seleccionar categoría..."
-                {...register("categoryId")}
-                error={errors.categoryId?.message}
-                required
-              />
-              <Select
-                label="Sede de entrenamiento"
-                options={catalogs.venues}
-                placeholder="Seleccionar sede..."
-                {...register("venueId")}
-                error={errors.venueId?.message}
-                required
-              />
+              <Select label="Categoría" options={catalogs.categories} placeholder="Seleccionar categoría..." {...register("categoryId")} error={errors.categoryId?.message} required />
+              <Select label="Sede de entrenamiento" options={catalogs.venues} placeholder="Seleccionar sede..." {...register("venueId")} error={errors.venueId?.message} required />
             </div>
           </section>
 
           {/* Sección 3: Uniforme */}
-          <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <section className="glass-card p-6 sm:p-8 space-y-5">
+            <h2 className="text-lg font-semibold text-[#1a3c2a] flex items-center gap-2">
               <Icons.shirt />
               Uniforme
             </h2>
-
-            <CheckboxGroup
-              label="Tipo de Uniforme o Prenda"
-              options={catalogs.uniformTypes}
-              selectedValues={watch("uniformTypeIds") || []}
-              onChange={handleUniformTypeChange}
-              error={errors.uniformTypeIds?.message}
-              required
-              columns={2}
-            />
-
+            <CheckboxGroup label="Tipo de Uniforme o Prenda" options={catalogs.uniformTypes} selectedValues={watch("uniformTypeIds") || []} onChange={handleUniformTypeChange} error={errors.uniformTypeIds?.message} required columns={2} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <Select
-                label="Estilo de uniforme"
-                options={catalogs.uniformStyles}
-                placeholder="Seleccionar estilo..."
-                {...register("uniformStyleId")}
-              />
-              <Select
-                label="Talla"
-                options={catalogs.sizes}
-                placeholder="Seleccionar talla..."
-                {...register("size")}
-                error={errors.size?.message}
-                required
-              />
+              <Select label="Estilo de uniforme" options={catalogs.uniformStyles} placeholder="Seleccionar estilo..." {...register("uniformStyleId")} />
+              <Select label="Talla" options={catalogs.sizes} placeholder="Seleccionar talla..." {...register("size")} error={errors.size?.message} required />
             </div>
           </section>
 
           {/* Sección 4: Celebración */}
-          <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Celebración del Jugador
-            </h2>
-
-            <Input
-              label="Descripción de la Celebración"
-              placeholder="Describe el gesto o movimiento que te gustaría que haga el jugador..."
-              {...register("celebrationDesc")}
-              error={errors.celebrationDesc?.message}
-              required
-            />
-
-            <Input
-              label="Nota o instrucción adicional (opcional)"
-              placeholder="Cualquier información adicional que quieras agregar..."
-              {...register("additionalNotes")}
-            />
+          <section className="glass-card p-6 sm:p-8 space-y-5">
+            <h2 className="text-lg font-semibold text-[#1a3c2a]">Celebración del Jugador</h2>
+            <Input label="Descripción de la Celebración" placeholder="Describe el gesto o movimiento que te gustaría que haga el jugador..." {...register("celebrationDesc")} error={errors.celebrationDesc?.message} required />
+            <Input label="Nota o instrucción adicional (opcional)" placeholder="Cualquier información adicional que quieras agregar..." {...register("additionalNotes")} />
           </section>
 
-          {/* Sección 5: Términos y envío */}
-          <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+          {/* Sección 5: Términos */}
+          <section className="glass-card p-6 sm:p-8 space-y-5">
             <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                {...register("agreeToTerms")}
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <span className="text-sm text-gray-600">
-                Confirmo que los datos ingresados son correctos y acepto las
-                políticas de solicitud de uniforme de HighLanders.
-              </span>
+              <input type="checkbox" {...register("agreeToTerms")} className="mt-1 h-4 w-4 rounded border-gray-300 text-[#1a3c2a] focus:ring-[#C8A84E]" />
+              <span className="text-sm text-gray-600">Confirmo que los datos ingresados son correctos y acepto las políticas de solicitud de uniforme de HighLanders.</span>
             </label>
-            {errors.agreeToTerms && (
-              <p className="text-sm text-red-600">
-                {errors.agreeToTerms.message}
-              </p>
-            )}
+            {errors.agreeToTerms && <p className="text-sm text-red-500">{errors.agreeToTerms.message}</p>}
 
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => router.push("/")}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                loading={isSubmitting}
-                disabled={numberStatus.available !== true && numberStatus.available !== null}
-              >
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100/50">
+              <Button type="button" variant="ghost" onClick={() => router.push("/")}>Cancelar</Button>
+              <Button type="submit" loading={isSubmitting} variant="gold" disabled={numberStatus.available !== true && numberStatus.available !== null}>
                 {isSubmitting ? "Enviando..." : "Enviar Solicitud"}
               </Button>
             </div>

@@ -14,21 +14,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HighLanders - Sistema de Uniformes",
-  description:
-    "Sistema de validación y gestión de solicitudes de uniformes para HighLanders Fútbol Formativo",
+  description: "Sistema de validación y gestión de solicitudes de uniformes para HighLanders Fútbol Formativo",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-gray-50">{children}</body>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

@@ -54,8 +54,8 @@ export const playerService = {
 
     if (search) {
       where.OR = [
-        { fullName: { contains: search, mode: "insensitive" } },
-        { preferredName: { contains: search, mode: "insensitive" } },
+        { fullName: { contains: search } },
+        { preferredName: { contains: search } },
         { code: isNaN(Number(search)) ? undefined : Number(search) },
       ].filter(Boolean) as Prisma.PlayerWhereInput[];
     }
@@ -111,8 +111,8 @@ export const playerService = {
       where: {
         status: "Activo",
         OR: [
-          { fullName: { contains: query, mode: "insensitive" } },
-          { preferredName: { contains: query, mode: "insensitive" } },
+          { fullName: { contains: query } },
+          { preferredName: { contains: query } },
         ],
       },
       select: {

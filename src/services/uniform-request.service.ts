@@ -78,9 +78,9 @@ export const uniformRequestService = {
 
     if (search) {
       where.OR = [
-        { playerFullName: { contains: search, mode: "insensitive" } },
-        { ticket: { contains: search, mode: "insensitive" } },
-        { uniformName: { contains: search, mode: "insensitive" } },
+        { playerFullName: { contains: search } },
+        { ticket: { contains: search } },
+        { uniformName: { contains: search } },
       ];
     }
 

@@ -38,7 +38,7 @@ export default async function PlayersPage({ searchParams }: Props) {
     const where: Record<string, unknown> = {};
     if (search) {
       where.OR = [
-        { fullName: { contains: search, mode: "insensitive" } },
+        { fullName: { contains: search } },
         ...(isNaN(Number(search)) ? [] : [{ code: Number(search) }]),
       ];
     }

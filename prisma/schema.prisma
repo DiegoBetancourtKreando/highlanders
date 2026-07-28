@@ -1,0 +1,265 @@
+// ============================================================
+// SCHEMA PRISMA - HighLanders Uniforms
+// Sistema de Validación y Gestión de Uniformes
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// CATEGORÍA
+// Ej: Sub-4, Sub-5, ..., Sub-22
+// ============================================================
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique // "Sub-4", "Sub-5", etc.
+  slug      String   @unique // "sub-4", "sub-5"
+  minAge    Int?     // Edad mínima (opcional)
+  maxAge    Int?     // Edad máxima (opcional)
+  order     Int      @default(0) // Orden de visualización
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players         Player[]
+  uniformRequests UniformRequest[]
+
+  @@map("categories")
+}
+
+// ============================================================
+// SEDE DE ENTRENAMIENTO
+// Ej: A. La Pampa, B. Carcelén, C. El Portal, D. Pomasqui
+// ============================================================
+model Venue {
+  id        String   @id @default(cuid())
+  name      String   @unique // "A. La Pampa", "B. Carcelén"
+  slug      String   @unique // "a-la-pampa", "b-carcelen"
+  zone      String?  // Zona geográfica (opcional)
+  address   String?  // Dirección
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players         Player[]
+  uniformRequests UniformRequest[]
+
+  @@map("venues")
+}
+
+// ============================================================
+// POSICIÓN DE JUEGO
+// Ej: GK, DF, MF, WG, FW
+// ============================================================
+model Position {
+  id        String   @id @default(cuid())
+  name      String   @unique // "GK", "DF", "MF", "WG", "FW"
+  fullName  String?  // "Goalkeeper", "Defender", etc.
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  playersRegistered Player[] @relation("RegisteredPosition")
+  playersAssigned   Player[] @relation("AssignedPosition")
+
+  @@map("positions")
+}
+
+// ============================================================
+// JUGADOR
+// Entidad central del sistema
+// ============================================================
+model Player {
+  id              String   @id @default(cuid())
+  code            Int      @unique // Código único del jugador (columna C)
+  fullName        String   // Nombre completo
+  preferredName   String?  // Nombre de uso (apodo)
+  uniformName     String?  // Nombre en el uniforme
+  jerseyNumber    String?  // Número de camiseta actual
+  gender          String?  // Género
+  birthDate       DateTime? // Fecha de nacimiento
+  dateOfEntry     DateTime? // Fecha de ingreso
+  seniority       String?  // Antigüedad (texto libre)
+  status          String   @default("Activo") // Activo, Pasivo
+  city            String?  // Ciudad
+  geographicZone  String?  // Zona geográfica
+  modelType       String?  // Modelo de participación
+  daysOfAttendance String? // Días de asistencia
+  timeSlot        String?  // Franja horaria
+  group           String?  // Grupo
+  level           Int?     // Nivel (1-4)
+  notes           String?  // Notas adicionales
+
+  // Relaciones
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  venueId String
+  venue   Venue @relation(fields: [venueId], references: [id])
+
+  registeredPositionId String?
+  registeredPosition   Position? @relation("RegisteredPosition", fields: [registeredPositionId], references: [id])
+
+  assignedPositionId String?
+  assignedPosition   Position? @relation("AssignedPosition", fields: [assignedPositionId], references: [id])
+
+  uniformRequests UniformRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Índices
+  @@index([status])
+  @@index([categoryId])
+  @@index([venueId])
+  @@index([categoryId, venueId])
+  @@index([status, categoryId, venueId])
+
+  @@map("players")
+}
+
+// ============================================================
+// TIPO DE UNIFORME
+// Ej: Uniforme completo, Solo camiseta, Solo pantaloneta, Solo medias
+// ============================================================
+model UniformType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uniformRequests UniformRequest[]
+
+  @@map("uniform_types")
+}
+
+// ============================================================
+// ESTILO DE UNIFORME
+// Ej: Titular (verde con dorado)
+// ============================================================
+model UniformStyle {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  color     String?  // Descripción de colores
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uniformRequests UniformRequest[]
+
+  @@map("uniform_styles")
+}
+
+// ============================================================
+// TALLA DE UNIFORME
+// Catálogo de tallas disponibles
+// ============================================================
+model UniformSize {
+  id        String   @id @default(cuid())
+  name      String   @unique // "30", "32", "XS", "S", "M"
+  category  String?  // "numeric" | "letter"
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("uniform_sizes")
+}
+
+// ============================================================
+// SOLICITUD DE UNIFORME
+// Registro de cada solicitud hecha por un representante
+// ============================================================
+model UniformRequest {
+  id        String   @id @default(cuid())
+  ticket    String   @unique // Número de ticket: REQ-{YYYY}-{XXXXX}
+
+  // Datos del formulario
+  playerFullName     String   // Nombre completo del jugador
+  uniformName        String   // Nombre en la camiseta
+  nameMeaning        String   // Contexto/significado del nombre
+  jerseyNumber       String   // Número solicitado
+  celebrationDesc    String   // Descripción de celebración
+  additionalNotes    String?  // Notas opcionales
+
+  // Datos de contexto
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  venueId String
+  venue   Venue @relation(fields: [venueId], references: [id])
+
+  uniformTypeId String?
+  uniformType   UniformType? @relation(fields: [uniformTypeId], references: [id])
+
+  uniformStyleId String?
+  uniformStyle   UniformStyle? @relation(fields: [uniformStyleId], references: [id])
+
+  size String? // Talla solicitada (texto libre: "30", "S", "M", etc.)
+
+  // Relación opcional con jugador existente
+  playerId String?
+  player   Player? @relation(fields: [playerId], references: [id])
+
+  // Estado de la solicitud
+  status    String   @default("Pendiente") // Pendiente, Aprobada, Rechazada, Entregada
+  notes     String?  // Notas internas
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([venueId])
+  @@index([playerId])
+  @@index([jerseyNumber])
+  @@index([createdAt])
+
+  @@map("uniform_requests")
+}
+
+// ============================================================
+// USUARIO ADMINISTRADOR
+// Acceso al panel de administración
+// ============================================================
+model AdminUser {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  fullName      String
+  role          String   @default("admin") // admin, superadmin
+  isActive      Boolean  @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  importLogs ImportLog[]
+
+  @@map("admin_users")
+}
+
+// ============================================================
+// LOG DE IMPORTACIONES
+// Registro de cada importación de datos desde Excel
+// ============================================================
+model ImportLog {
+  id          String   @id @default(cuid())
+  filename    String   // Nombre del archivo importado
+  totalRows   Int      // Total de filas procesadas
+  successRows Int      // Filas importadas exitosamente
+  errorRows   Int      // Filas con errores
+  errors      String?  // Detalle de errores (JSON)
+  status      String   @default("Completado") // Completado, Parcial, Fallido
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id])
+
+  @@map("import_logs")
+}

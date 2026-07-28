@@ -32,27 +32,33 @@ interface ExcelPlayerRow {
   franjaHoraria: string;
 }
 
+// Lista de hojas de categoría (con datos reales, a diferencia de Matriz)
+const CATEGORY_SHEETS = [
+  "Sub-4", "Sub-5", "Sub-6", "Sub-7", "Sub-8", "Sub-9",
+  "Sub-10", "Sub-11", "Sub-12", "Sub-13", "Sub-14", "Sub-16", "Sub-22",
+];
+
 export const importService = {
   /**
-   * Procesa el archivo Excel desde un buffer en memoria
-   * y extrae los jugadores de la hoja Matriz
+   * Lee una hoja de categoría del workbook y extrae los jugadores
    */
-  parseExcelBuffer(buffer: Buffer): ExcelPlayerRow[] {
-    const workbook = XLSX.read(buffer, { type: "buffer" });
-    const sheet = workbook.Sheets["Matriz"];
-
-    if (!sheet) {
-      throw new Error("No se encontró la hoja 'Matriz' en el archivo Excel");
-    }
-
+  parseCategorySheet(
+    sheet: XLSX.WorkSheet,
+    categoryName: string
+  ): ExcelPlayerRow[] {
     const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
     const players: ExcelPlayerRow[] = [];
 
+    // Row 0 = "Total de jugadores: X", Row 1 = headers, Row 2+ = data
     for (let i = 2; i < rawData.length; i++) {
       const row = rawData[i] as Array<string | number>;
       const codigo = row[1];
 
-      if (!codigo || String(codigo).trim() === "" || String(codigo).trim() === "CÓDIGO") {
+      if (
+        !codigo ||
+        String(codigo).trim() === "" ||
+        String(codigo).trim() === "CÓDIGO"
+      ) {
         continue;
       }
 
@@ -85,53 +91,55 @@ export const importService = {
   },
 
   /**
+   * Procesa el archivo Excel desde un buffer en memoria
+   * y extrae los jugadores de TODAS las hojas de categoría
+   */
+  parseExcelBuffer(buffer: Buffer): ExcelPlayerRow[] {
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const allPlayers: ExcelPlayerRow[] = [];
+    const processedCodes = new Set<number>();
+
+    for (const sheetName of CATEGORY_SHEETS) {
+      const sheet = workbook.Sheets[sheetName];
+      if (!sheet) continue; // Saltar si la hoja no existe
+
+      const players = this.parseCategorySheet(sheet, sheetName);
+
+      for (const player of players) {
+        // Evitar duplicados (mismo código en varias hojas)
+        if (!processedCodes.has(player.codigo)) {
+          processedCodes.add(player.codigo);
+          allPlayers.push(player);
+        }
+      }
+    }
+
+    return allPlayers;
+  },
+
+  /**
    * Procesa el archivo Excel desde una ruta de archivo
    */
   parseExcelFile(filePath: string): ExcelPlayerRow[] {
     const workbook = XLSX.readFile(filePath);
-    const sheet = workbook.Sheets["Matriz"];
+    const allPlayers: ExcelPlayerRow[] = [];
+    const processedCodes = new Set<number>();
 
-    if (!sheet) {
-      throw new Error("No se encontró la hoja 'Matriz' en el archivo Excel");
-    }
+    for (const sheetName of CATEGORY_SHEETS) {
+      const sheet = workbook.Sheets[sheetName];
+      if (!sheet) continue;
 
-    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-    const players: ExcelPlayerRow[] = [];
+      const players = this.parseCategorySheet(sheet, sheetName);
 
-    for (let i = 2; i < rawData.length; i++) {
-      const row = rawData[i] as Array<string | number>;
-      const codigo = row[1];
-
-      if (!codigo || String(codigo).trim() === "" || String(codigo).trim() === "CÓDIGO") {
-        continue;
+      for (const player of players) {
+        if (!processedCodes.has(player.codigo)) {
+          processedCodes.add(player.codigo);
+          allPlayers.push(player);
+        }
       }
-
-      players.push({
-        codigo: Number(codigo),
-        nombreCompleto: String(row[2] || "").trim(),
-        nombreUso: String(row[3] || "").trim(),
-        nombreUniforme: String(row[4] || "").trim(),
-        numero: String(row[5] || "").trim(),
-        posicionRegistrada: String(row[6] || "").trim(),
-        posicionAsignada: String(row[7] || "").trim(),
-        grupo: String(row[8] || "").trim(),
-        nivel: row[9] ? Number(row[9]) : 0,
-        fechaIngreso: row[10],
-        antiguedad: String(row[11] || "").trim(),
-        genero: String(row[13] || "").trim(),
-        fechaNacimiento: row[14],
-        categoria: String(row[15] || "").trim(),
-        estado: String(row[16] || "Activo").trim(),
-        ciudad: String(row[17] || "").trim(),
-        zonaGeografica: String(row[18] || "").trim(),
-        sede: String(row[19] || "").trim(),
-        modelo: String(row[20] || "").trim(),
-        diasAsistencia: String(row[21] || "").trim(),
-        franjaHoraria: String(row[22] || "").trim(),
-      });
     }
 
-    return players;
+    return allPlayers;
   },
 
   /**
